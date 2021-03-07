@@ -16,3 +16,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die;
 }
 
+remove_action('welcome_panel', 'wp_welcome_panel');
