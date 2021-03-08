@@ -16,6 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die;
 }
 
+add_action('admin_init', function(){
+    
+});
+
 add_filter('show_admin_bar', '__return_false');
 
 add_action( 'wp_dashboard_setup', 'starter_wp_remove_all_dashboard_metaboxes' );
@@ -42,24 +46,35 @@ function starter_wp_admin_styles() {
 <?php	
 }
 
-add_action('admin_menu','starter_wp_admin_footer_version');
-function starter_wp_admin_footer_version() {
+add_action('admin_menu', function(){
     remove_filter( 'update_footer', 'core_update_footer' );
-}
+});
 
 add_filter('admin_footer_text', 'starter_wp_admin_footer_change');
 function starter_wp_admin_footer_change () {
   echo '<i>Thank you!</i>';
 }
 
-add_filter('contextual_help_list','starter_wp_contextual_help_remove');
-function starter_wp_contextual_help_remove(){
-    global $current_screen;
-    $current_screen->remove_help_tabs();
-}
+add_filter('admin_head', function(){
+    $screen = get_current_screen();
+    $screen->remove_help_tabs();    
+});
 
-add_action( 'wp_before_admin_bar_render', 'starter_wp_admin_bar_remove_logo', 0 );
-function starter_wp_admin_bar_remove_logo() {
+add_action('wp_before_admin_bar_render', function(){
     global $wp_admin_bar;
-    $wp_admin_bar->remove_menu( 'wp-logo' );
+    $wp_admin_bar->remove_menu( 'wp-logo' );    
+});
+
+
+// if js_composer active
+if ( in_array( 'js_composer/js_composer.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+
+    add_action('vc_after_init', function(){
+        vc_disable_frontend();
+    });
+    
+    add_action('admin_init', function(){
+            setcookie('vchideactivationmsg', '1', strtotime('+3 years'), '/');
+            setcookie('vchideactivationmsg_vc11', (defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1'), strtotime('+3 years'), '/');
+    });    
 }
