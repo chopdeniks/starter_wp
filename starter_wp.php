@@ -5,7 +5,7 @@
  * Description:       This is starter plugin with minimal tasks automated by just installing. No setting required. 
  * Version:           1.0.0
  * Author:            Nikhil Chopde
- * Text Domain:       github-updater
+ * Text Domain:       starter-plugin
  * GitHub Plugin URI: https://github.com/chopdeniks/starter_wp
  */
 
@@ -14,6 +14,18 @@
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	die;
+}
+register_activation_hook( __FILE__, 'starter_wp_activation' );
+function starter_wp_activation() {
+	add_option( 'starter_wp_activated', time() );
+	
+    // Find and delete the WP default 'Sample Page'
+    $defaultPage = get_page_by_title( 'Sample Page' );
+    wp_delete_post( $defaultPage->ID, $bypass_trash = true );
+
+    // Find and delete the WP default 'Hello world!' post
+    $defaultPost = get_posts( array( 'title' => 'Hello World!' ) );
+    wp_delete_post( $defaultPost[0]->ID, $bypass_trash = true );	
 }
 
 add_action('admin_init', function(){
