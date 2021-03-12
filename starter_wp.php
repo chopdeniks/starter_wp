@@ -19,13 +19,16 @@ register_activation_hook( __FILE__, 'starter_wp_activation' );
 function starter_wp_activation() {
 	add_option( 'starter_wp_activated', time() );
 	
-    // Find and delete the WP default 'Sample Page'
-    $defaultPage = get_page_by_title( 'Sample Page' );
-    wp_delete_post( $defaultPage->ID, $bypass_trash = true );
-
-    // Find and delete the WP default 'Hello world!' post
-    $defaultPost = get_posts( array( 'title' => 'Hello World!' ) );
-    wp_delete_post( $defaultPost[0]->ID, $bypass_trash = true );	
+	// Find and delete the WP default 'Hello world!' post
+	$defaultPost = get_posts( array( 'title' => 'Hello World!' ) );
+	if ( $defaultPost[0]->ID == "1" ){
+		wp_delete_post( $defaultPost[0]->ID, $bypass_trash = true );
+	}
+	// Find and delete the WP default 'Sample Page'
+	$defaultPage = get_page_by_title( 'Sample Page' );
+	if ( $defaultPage->ID == "2" ){
+		wp_delete_post( $defaultPage->ID, $bypass_trash = true );
+	}	
 }
 
 add_action('admin_init', function(){
@@ -44,7 +47,7 @@ function starter_wp_remove_all_dashboard_metaboxes() {
     remove_meta_box( 'health_check_status', 'dashboard', 'normal' );
     remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
     remove_meta_box( 'dashboard_activity', 'dashboard', 'normal');
-	remove_meta_box( 'dashboard_site_health', 'dashboard', 'normal');
+    remove_meta_box( 'dashboard_site_health', 'dashboard', 'normal');
 }
 
 add_action('admin_head', 'starter_wp_admin_styles');
