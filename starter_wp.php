@@ -100,3 +100,17 @@ if( in_array( 'mailchimp-for-wp/mailchimp-for-wp.php', apply_filters( 'active_pl
     set_transient( 'mc4wp_api_key_notice_dismissed', 1, YEAR_IN_SECONDS );
     
 }
+
+// Automatically clear Autoptimize cache if it goes beyond 20MB
+if (class_exists('autoptimizeCache')) {
+    $myMaxSize = 20000;
+    $statArr=autoptimizeCache::stats(); 
+    $cacheSize=round($statArr[1]/1024);
+    
+    if ($cacheSize>$myMaxSize){
+       autoptimizeCache::clearall();
+       header("Refresh:0");
+    }
+
+    add_filter('autoptimize_filter_main_imgopt_plug_notice','__return_empty_string');
+}
