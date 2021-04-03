@@ -93,3 +93,10 @@ if ( in_array( 'js_composer/js_composer.php', apply_filters( 'active_plugins', g
             setcookie('vchideactivationmsg_vc11', (defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1'), strtotime('+3 years'), '/');
     });    
 }
+
+// if Mailchimp for WordPress active
+if( in_array( 'mailchimp-for-wp/mailchimp-for-wp.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ){ 
+    
+    set_transient( 'mc4wp_api_key_notice_dismissed', 1, YEAR_IN_SECONDS );
+    
+}
