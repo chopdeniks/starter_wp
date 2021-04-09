@@ -61,6 +61,9 @@ function starter_wp_remove_all_dashboard_metaboxes() {
 	remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
 	remove_meta_box( 'dashboard_activity', 'dashboard', 'normal');
 	remove_meta_box( 'dashboard_site_health', 'dashboard', 'normal');
+	// Remove YITH news widgets
+	remove_meta_box( 'yith_dashboard_products_news', 'dashboard', 'normal');
+	remove_meta_box( 'yith_dashboard_blog_news', 'dashboard', 'normal');
 	// if Elementor active
 	if( in_array( 'elementor/elementor.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ){ 
 	remove_meta_box( 'e-dashboard-overview', 'dashboard', 'normal');
