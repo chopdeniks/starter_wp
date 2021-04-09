@@ -31,6 +31,8 @@ defined( $constant_name_prefix . 'DIR' ) or define( $constant_name_prefix . 'DIR
 defined( $constant_name_prefix . 'URL' ) or define( $constant_name_prefix . 'URL', plugin_dir_url( __FILE__ ) );	//SWP_URL
 defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PATH', plugin_dir_path( __FILE__ ) );	//SWP_PATH
 
+require_once( SWP_PATH . '/inc/required_plugins.php' );
+
 add_action('remove_default_posts_pages', function(){
 	// Find and delete the WP default 'Hello world!' post
 	$defaultPost = get_posts( array( 'title' => 'Hello World!' ) );
