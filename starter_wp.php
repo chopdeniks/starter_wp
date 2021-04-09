@@ -16,9 +16,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die;
 }
 register_activation_hook( __FILE__, 'starter_wp_activation' );
+register_deactivation_hook( __FILE__, 'starter_wp_deactivation' );
 function starter_wp_activation() {
 	add_option( 'starter_wp_activated', time() );
-	
+	do_action( 'remove_default_posts_pages' );	
+}
+
+function starter_wp_deactivation() {
+	delete_option( 'starter_wp_activated' );
+}
+
+$constant_name_prefix = 'SWP_';
+defined( $constant_name_prefix . 'DIR' ) or define( $constant_name_prefix . 'DIR', dirname( plugin_basename( __FILE__ ) ) );	//SWP_DIR
+defined( $constant_name_prefix . 'URL' ) or define( $constant_name_prefix . 'URL', plugin_dir_url( __FILE__ ) );	//SWP_URL
+defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PATH', plugin_dir_path( __FILE__ ) );	//SWP_PATH
+
+add_action('remove_default_posts_pages', function(){
 	// Find and delete the WP default 'Hello world!' post
 	$defaultPost = get_posts( array( 'title' => 'Hello World!' ) );
 	if ( $defaultPost[0]->ID == "1" ){
@@ -28,8 +41,8 @@ function starter_wp_activation() {
 	$defaultPage = get_page_by_title( 'Sample Page' );
 	if ( $defaultPage->ID == "2" ){
 		wp_delete_post( $defaultPage->ID, $bypass_trash = true );
-	}	
-}
+	}    
+});
 
 add_action('admin_init', function(){
     
@@ -103,21 +116,17 @@ if ( in_array( 'js_composer/js_composer.php', apply_filters( 'active_plugins', g
 
 // if Mailchimp for WordPress active
 if( in_array( 'mailchimp-for-wp/mailchimp-for-wp.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ){ 
-    
     set_transient( 'mc4wp_api_key_notice_dismissed', 1, YEAR_IN_SECONDS );
-    
 }
 
 // Automatically clear Autoptimize cache if it goes beyond 20MB
 if (class_exists('autoptimizeCache')) {
-    $myMaxSize = 20000;
-    $statArr=autoptimizeCache::stats(); 
-    $cacheSize=round($statArr[1]/1024);
-    
-    if ($cacheSize>$myMaxSize){
+    $myMaxSize = 20000; //20MB
+    $statArr = autoptimizeCache::stats(); 
+    $cacheSize = round($statArr[1]/1024);
+    if ($cacheSize > $myMaxSize){
        autoptimizeCache::clearall();
        header("Refresh:0");
     }
-
     add_filter('autoptimize_filter_main_imgopt_plug_notice','__return_empty_string');
 }
