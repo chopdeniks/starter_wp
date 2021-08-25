@@ -49,6 +49,19 @@ add_action('remove_default_posts_pages', function(){
 add_action('admin_init', function(){
     
 });
+function swp_plist(){
+	$plugins_list = array(
+		'elementor'  		=> 'elementor/elementor.php',
+		'woocommerce'		=> 'woocommerce/woocommerce.php',
+		'wpforms-lite'		=> 'wpforms-lite/wpforms.php',
+		'js_composer' 		=> 'js_composer/js_composer.php',
+		'mailchimp-for-wp'	=> 'mailchimp-for-wp/mailchimp-for-wp.php',
+	);
+	return $plugins_list;
+}
+function is_swp_plugins_active( $path ){
+	return in_array( $path, apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ); 
+}
 
 add_filter('show_admin_bar', '__return_false');
 
@@ -67,10 +80,13 @@ function starter_wp_remove_all_dashboard_metaboxes() {
 	remove_meta_box( 'yith_dashboard_products_news', 'dashboard', 'normal');
 	remove_meta_box( 'yith_dashboard_blog_news', 'dashboard', 'normal');
 	// if Elementor active
-	if( in_array( 'elementor/elementor.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ){ 
+	if ( is_swp_plugins_active( swp_plist()["elementor"] ) ) {	
 		remove_meta_box( 'e-dashboard-overview', 'dashboard', 'normal');
 		remove_meta_box('e-dashboard-widget-admin-top-bar', 'dashboard', 'normal');
 	}	
+	if ( is_swp_plugins_active( swp_plist()["wpforms-lite"] ) ) {
+    	remove_meta_box( 'wpforms_reports_widget_lite', 'dashboard', 'normal' );
+	} 
 }
 
 add_action('admin_head', 'starter_wp_admin_styles');
@@ -108,7 +124,7 @@ add_action('wp_before_admin_bar_render', function(){
 
 
 // if js_composer active
-if ( in_array( 'js_composer/js_composer.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+if ( is_swp_plugins_active( swp_plist()["js_composer"] ) ) {	
 
     add_action('vc_after_init', function(){
         vc_disable_frontend();
@@ -121,7 +137,7 @@ if ( in_array( 'js_composer/js_composer.php', apply_filters( 'active_plugins', g
 }
 
 // if Mailchimp for WordPress active
-if( in_array( 'mailchimp-for-wp/mailchimp-for-wp.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ){ 
+if ( is_swp_plugins_active( swp_plist()["mailchimp-for-wp"] ) ) { 
     set_transient( 'mc4wp_api_key_notice_dismissed', 1, YEAR_IN_SECONDS );
 }
 
