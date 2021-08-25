@@ -25,8 +25,8 @@ function eka_register_required_plugins() {
 			'required'  => false,
 		),	
 		array(
-			'name'      => 'SVG Support',
-			'slug'      => 'svg-support',
+			'name'      => 'Classic Widgets',
+			'slug'      => 'classic-widgets',
 			'required'  => false,
 		),	
 		array(
