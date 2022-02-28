@@ -64,6 +64,7 @@ function is_swp_plugins_active( $path ){
 }
 
 add_filter('show_admin_bar', '__return_false');
+add_filter( 'enable_post_by_email_configuration', '__return_false' );
 
 add_action( 'wp_dashboard_setup', 'starter_wp_remove_all_dashboard_metaboxes' );
 function starter_wp_remove_all_dashboard_metaboxes() {
