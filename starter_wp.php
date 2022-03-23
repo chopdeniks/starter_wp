@@ -93,10 +93,7 @@ function starter_wp_remove_all_dashboard_metaboxes() {
 add_action('admin_head', 'starter_wp_admin_styles');
 function starter_wp_admin_styles() {
 ?>
-<style>
-#adminmenu li.wp-not-current-submenu.wp-menu-separator {
-    display: none!important;
-}	
+<style>	
 #wc_actions, .wc_actions, .column-wc_actions {
     display: table-cell!important;
 }	
