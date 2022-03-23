@@ -106,6 +106,10 @@ function starter_wp_admin_styles() {
 
 add_action('admin_menu', function(){
     remove_filter( 'update_footer', 'core_update_footer' );
+	$separator = ['separator1','separator-woocommerce', 'separator2', 'separator-last'];
+	foreach( $separator as $sep ) {
+		remove_menu_page( $sep );
+	}	
 });
 
 add_filter('admin_footer_text', 'starter_wp_admin_footer_change');
