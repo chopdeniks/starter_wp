@@ -54,6 +54,7 @@ function swp_plist(){
 		'elementor'  		=> 'elementor/elementor.php',
 		'woocommerce'		=> 'woocommerce/woocommerce.php',
 		'wpforms-lite'		=> 'wpforms-lite/wpforms.php',
+		'gravityforms'		=> 'gravityforms/gravityforms.php',
 		'js_composer' 		=> 'js_composer/js_composer.php',
 		'mailchimp-for-wp'	=> 'mailchimp-for-wp/mailchimp-for-wp.php',
 	);
@@ -85,9 +86,15 @@ function starter_wp_remove_all_dashboard_metaboxes() {
 		remove_meta_box( 'e-dashboard-overview', 'dashboard', 'normal');
 		remove_meta_box('e-dashboard-widget-admin-top-bar', 'dashboard', 'normal');
 	}	
+	// if WPForms free active
 	if ( is_swp_plugins_active( swp_plist()["wpforms-lite"] ) ) {
     	remove_meta_box( 'wpforms_reports_widget_lite', 'dashboard', 'normal' );
 	} 
+	// if Gravity Forms active
+	if ( is_swp_plugins_active( swp_plist()["gravityforms"] ) ) {
+    	remove_meta_box( 'rg_forms_dashboard', 'dashboard', 'normal' );
+	} 	
+
 }
 
 add_action('admin_head', 'starter_wp_admin_styles');
@@ -133,8 +140,8 @@ if ( is_swp_plugins_active( swp_plist()["js_composer"] ) ) {
     });
     
     add_action('admin_init', function(){
-            setcookie('vchideactivationmsg', '1', strtotime('+3 years'), '/');
-            setcookie('vchideactivationmsg_vc11', (defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1'), strtotime('+3 years'), '/');
+        setcookie('vchideactivationmsg', '1', strtotime('+3 years'), '/');
+        setcookie('vchideactivationmsg_vc11', (defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1'), strtotime('+3 years'), '/');
     });    
 }
 
@@ -153,4 +160,13 @@ if (class_exists('autoptimizeCache')) {
        header("Refresh:0");
     }
     add_filter('autoptimize_filter_main_imgopt_plug_notice','__return_empty_string');
+}
+
+// if Gravity Forms active
+if ( is_swp_plugins_active( swp_plist()["gravityforms"] ) ) {
+	// Remove gravity forms nag
+	add_action('admin_init', function(){
+		update_option( 'rg_gforms_message', '' );
+		remove_action( 'after_plugin_row_gravityforms/gravityforms.php', array( 'GFForms', 'plugin_row' ) );		
+	});
 }
