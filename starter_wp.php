@@ -32,6 +32,8 @@ defined( $constant_name_prefix . 'URL' ) or define( $constant_name_prefix . 'URL
 defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PATH', plugin_dir_path( __FILE__ ) );	//SWP_PATH
 
 require_once( SWP_PATH . '/inc/required_plugins.php' );
+require_once( SWP_PATH . '/inc/plugin_setting.php' );
+
 
 add_action('remove_default_posts_pages', function(){
 	// Find and delete the WP default 'Hello world!' post
@@ -54,7 +56,6 @@ function swp_plist(){
 		'elementor'  		=> 'elementor/elementor.php',
 		'woocommerce'		=> 'woocommerce/woocommerce.php',
 		'wpforms-lite'		=> 'wpforms-lite/wpforms.php',
-		'gravityforms'		=> 'gravityforms/gravityforms.php',
 		'js_composer' 		=> 'js_composer/js_composer.php',
 		'mailchimp-for-wp'	=> 'mailchimp-for-wp/mailchimp-for-wp.php',
 	);
@@ -64,8 +65,20 @@ function is_swp_plugins_active( $path ){
 	return in_array( $path, apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ); 
 }
 
-add_filter('show_admin_bar', '__return_false');
 add_filter( 'enable_post_by_email_configuration', '__return_false' );
+
+add_filter( 'show_admin_bar', 'swp_hide_admin_bar' );
+function swp_hide_admin_bar( $show ) {
+    $swp_options = get_option( 'swp_settings' );
+    $disable_admin_bar = $swp_options['disable_admin_bar'];
+
+	if ( $disable_admin_bar == 1 ) {
+	    return false;
+	}
+
+	return $show;
+
+}
 
 add_action( 'wp_dashboard_setup', 'starter_wp_remove_all_dashboard_metaboxes' );
 function starter_wp_remove_all_dashboard_metaboxes() {
@@ -86,15 +99,9 @@ function starter_wp_remove_all_dashboard_metaboxes() {
 		remove_meta_box( 'e-dashboard-overview', 'dashboard', 'normal');
 		remove_meta_box('e-dashboard-widget-admin-top-bar', 'dashboard', 'normal');
 	}	
-	// if WPForms free active
 	if ( is_swp_plugins_active( swp_plist()["wpforms-lite"] ) ) {
     	remove_meta_box( 'wpforms_reports_widget_lite', 'dashboard', 'normal' );
 	} 
-	// if Gravity Forms active
-	if ( is_swp_plugins_active( swp_plist()["gravityforms"] ) ) {
-    	remove_meta_box( 'rg_forms_dashboard', 'dashboard', 'normal' );
-	} 	
-
 }
 
 add_action('admin_head', 'starter_wp_admin_styles');
@@ -140,8 +147,8 @@ if ( is_swp_plugins_active( swp_plist()["js_composer"] ) ) {
     });
     
     add_action('admin_init', function(){
-        setcookie('vchideactivationmsg', '1', strtotime('+3 years'), '/');
-        setcookie('vchideactivationmsg_vc11', (defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1'), strtotime('+3 years'), '/');
+            setcookie('vchideactivationmsg', '1', strtotime('+3 years'), '/');
+            setcookie('vchideactivationmsg_vc11', (defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1'), strtotime('+3 years'), '/');
     });    
 }
 
@@ -160,13 +167,4 @@ if (class_exists('autoptimizeCache')) {
        header("Refresh:0");
     }
     add_filter('autoptimize_filter_main_imgopt_plug_notice','__return_empty_string');
-}
-
-// if Gravity Forms active
-if ( is_swp_plugins_active( swp_plist()["gravityforms"] ) ) {
-	// Remove gravity forms nag
-	add_action('admin_init', function(){
-		update_option( 'rg_gforms_message', '' );
-		remove_action( 'after_plugin_row_gravityforms/gravityforms.php', array( 'GFForms', 'plugin_row' ) );		
-	});
 }
