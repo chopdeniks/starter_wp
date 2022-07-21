@@ -20,10 +20,13 @@ register_deactivation_hook( __FILE__, 'starter_wp_deactivation' );
 function starter_wp_activation() {
 	add_option( 'starter_wp_activated', time() );
 	do_action( 'remove_default_posts_pages' );	
+	add_option( 'swp_settings', array() );
+	swp_settings_default_options();
 }
 
 function starter_wp_deactivation() {
 	delete_option( 'starter_wp_activated' );
+	delete_option( 'swp_settings' );
 }
 
 $constant_name_prefix = 'SWP_';
@@ -48,9 +51,16 @@ add_action('remove_default_posts_pages', function(){
 	}    
 });
 
-add_action('admin_init', function(){
-    
-});
+add_action('admin_init', function(){});
+
+function swp_settings_default_options(){
+    $swp_options = array(
+        'disable_admin_bar'=> '0',
+
+    );    
+    update_option( 'swp_settings', $swp_options );
+}
+
 function swp_plist(){
 	$plugins_list = array(
 		'elementor'  		=> 'elementor/elementor.php',
