@@ -68,6 +68,7 @@ function swp_plist(){
 		'wpforms-lite'		=> 'wpforms-lite/wpforms.php',
 		'js_composer' 		=> 'js_composer/js_composer.php',
 		'mailchimp-for-wp'	=> 'mailchimp-for-wp/mailchimp-for-wp.php',
+		'updraftplus'	    => 'updraftplus/updraftplus.php',
 	);
 	return $plugins_list;
 }
@@ -177,4 +178,12 @@ if (class_exists('autoptimizeCache')) {
        header("Refresh:0");
     }
     add_filter('autoptimize_filter_main_imgopt_plug_notice','__return_empty_string');
+}
+
+
+// if Updraftplus active
+if ( is_swp_plugins_active( swp_plist()["updraftplus"] ) ) { 
+    add_action('admin_init', function(){
+        UpdraftPlus_Options::update_updraft_option('updraftplus_dismisseddashnotice', time() + 10*366*86400);
+    });
 }
