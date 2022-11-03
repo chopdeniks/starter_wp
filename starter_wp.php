@@ -69,6 +69,7 @@ function swp_plist(){
 		'js_composer' 		=> 'js_composer/js_composer.php',
 		'mailchimp-for-wp'	=> 'mailchimp-for-wp/mailchimp-for-wp.php',
 		'updraftplus'	    => 'updraftplus/updraftplus.php',
+		'gravityforms'	    => 'gravityforms/gravityforms.php',
 	);
 	return $plugins_list;
 }
@@ -113,6 +114,9 @@ function starter_wp_remove_all_dashboard_metaboxes() {
 	if ( is_swp_plugins_active( swp_plist()["wpforms-lite"] ) ) {
     	remove_meta_box( 'wpforms_reports_widget_lite', 'dashboard', 'normal' );
 	} 
+	if ( is_swp_plugins_active( swp_plist()["gravityforms"] ) ) {
+    	remove_meta_box( 'rg_forms_dashboard', 'dashboard', 'normal' );
+	}	
 }
 
 add_action('admin_head', 'starter_wp_admin_styles');
