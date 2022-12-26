@@ -82,7 +82,7 @@ add_filter( 'enable_post_by_email_configuration', '__return_false' );
 add_filter( 'show_admin_bar', 'swp_hide_admin_bar' );
 function swp_hide_admin_bar( $show ) {
     $swp_options = get_option( 'swp_settings' );
-	if ( $disable_admin_bar ) {
+	if ( $swp_options ) {
 		$disable_admin_bar = $swp_options['disable_admin_bar'];
 		if ( $disable_admin_bar == 1 ) {
 			return false;
