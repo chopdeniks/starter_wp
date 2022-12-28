@@ -20,7 +20,7 @@ register_deactivation_hook( __FILE__, 'starter_wp_deactivation' );
 function starter_wp_activation() {
 	add_option( 'starter_wp_activated', time() );
 	do_action( 'remove_default_posts_pages' );	
-	add_option( 'swp_settings', array() );
+	//add_option( 'swp_settings', array() );
 	swp_settings_default_options();
 }
 
