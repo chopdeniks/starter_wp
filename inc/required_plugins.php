@@ -3,7 +3,6 @@
 require_once dirname( __FILE__ ) . '/tgmpa/class-tgm-plugin-activation.php';
 
 add_action( 'tgmpa_register', 'eka_register_required_plugins' );
-
 function eka_register_required_plugins() {
 
 	$plugins = array(
