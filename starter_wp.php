@@ -20,13 +20,10 @@ register_deactivation_hook( __FILE__, 'starter_wp_deactivation' );
 function starter_wp_activation() {
 	add_option( 'starter_wp_activated', time() );
 	do_action( 'remove_default_posts_pages' );	
-	//add_option( 'swp_settings', array() );
-	swp_settings_default_options();
 }
 
 function starter_wp_deactivation() {
 	delete_option( 'starter_wp_activated' );
-	delete_option( 'swp_settings' );
 }
 
 $constant_name_prefix = 'SWP_';
@@ -35,8 +32,6 @@ defined( $constant_name_prefix . 'URL' ) or define( $constant_name_prefix . 'URL
 defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PATH', plugin_dir_path( __FILE__ ) );	//SWP_PATH
 
 require_once( SWP_PATH . '/inc/required_plugins.php' );
-require_once( SWP_PATH . '/inc/plugin_setting.php' );
-
 
 add_action('remove_default_posts_pages', function(){
 	// Find and delete the WP default 'Hello world!' post
@@ -52,14 +47,6 @@ add_action('remove_default_posts_pages', function(){
 });
 
 add_action('admin_init', function(){});
-
-function swp_settings_default_options(){
-    $swp_options = array(
-        'disable_admin_bar'=> '0',
-
-    );    
-    update_option( 'swp_settings', $swp_options );
-}
 
 function swp_plist(){
 	$plugins_list = array(
@@ -78,18 +65,6 @@ function is_swp_plugins_active( $path ){
 }
 
 add_filter( 'enable_post_by_email_configuration', '__return_false' );
-
-add_filter( 'show_admin_bar', 'swp_hide_admin_bar' );
-function swp_hide_admin_bar( $show ) {
-    $swp_options = get_option( 'swp_settings' );
-	if ( $swp_options ) {
-		$disable_admin_bar = $swp_options['disable_admin_bar'];
-		if ( $disable_admin_bar == 1 ) {
-			return false;
-		}
-	}	
-	return $show;
-}
 
 add_action( 'wp_dashboard_setup', 'starter_wp_remove_all_dashboard_metaboxes' );
 function starter_wp_remove_all_dashboard_metaboxes() {
@@ -189,4 +164,21 @@ if ( is_swp_plugins_active( swp_plist()["updraftplus"] ) ) {
     add_action('admin_init', function(){
         UpdraftPlus_Options::update_updraft_option('updraftplus_dismisseddashnotice', time() + 10*366*86400);
     });
+}
+
+// Disable directory browsing
+add_action( 'admin_init', 'swp_modify_htaccess_functions' );
+function swp_modify_htaccess_functions(){
+  if( !is_multisite() ){
+    require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+    $home_path = get_home_path();
+    $htaccess_location = $home_path . '.htaccess';
+
+    $content = array(
+      'Options -Indexes'
+    );
+	
+    insert_with_markers( $htaccess_location, 'emn_edit', $content );
+  }
 }
