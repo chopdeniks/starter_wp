@@ -8,6 +8,8 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once( SWP_PATH . '/inc/required_plugins.php' );
+//include tgmpa requirement
+require_once dirname( __FILE__ ) . '/required_plugins.php';
 
-require_once( SWP_PATH . '/inc/core-wp/core_wp.php' );
+//include core-wp files
+require_once dirname( __FILE__ ) . '/core-wp/core_wp.php';
