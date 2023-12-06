@@ -93,6 +93,21 @@ function starter_wp_remove_all_dashboard_metaboxes() {
 	}	
 }
 
+function starter_wp_remove_simple_css_metabox_from_all_post_types() {
+    $post_types = get_post_types();
+
+    // Exclude a specific post type from the removal process (e.g., 'page')
+    $exclude_post_type = '';
+    if (($key = array_search($exclude_post_type, $post_types)) !== false) {
+        unset($post_types[$key]);
+    }
+
+    foreach ($post_types as $post_type) {
+        remove_meta_box('simple_css_metabox', $post_type, 'normal');
+    }
+}
+add_action('add_meta_boxes', 'starter_wp_remove_simple_css_metabox_from_all_post_types');
+
 add_action('admin_head', 'starter_wp_admin_styles');
 function starter_wp_admin_styles() {
 ?>
