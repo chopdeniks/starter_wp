@@ -19,7 +19,6 @@ register_activation_hook( __FILE__, 'starter_wp_activation' );
 register_deactivation_hook( __FILE__, 'starter_wp_deactivation' );
 function starter_wp_activation() {
 	add_option( 'starter_wp_activated', time() );
-	do_action( 'remove_default_posts_pages' );	
 }
 
 function starter_wp_deactivation() {
@@ -33,18 +32,54 @@ defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PA
 
 require_once( SWP_PATH . '/inc/init.php' );
 
-add_action('remove_default_posts_pages', function(){
-	// Find and delete the WP default 'Hello world!' post
-	$defaultPost = get_posts( array( 'title' => 'Hello World!' ) );
-	if ( $defaultPost[0]->ID == "1" ){
-		wp_delete_post( $defaultPost[0]->ID, $bypass_trash = true );
+// Hook the function to the 'init' hook, which is appropriate for plugin initialization
+add_action( 'admin_init', 'remove_default_posts_pages' );
+function remove_default_posts_pages() {
+    // Check if 'Hello world!' post exists
+    $hello_world_post = wpn_get_page_by_title( 'Hello World!', OBJECT, 'post' );
+    if ( $hello_world_post ) {
+        // Delete the 'Hello world!' post
+        wp_delete_post( $hello_world_post->ID, true );
+    }
+
+    // Check if 'Sample Page' exists
+    $sample_page = wpn_get_page_by_title( 'Sample Page', OBJECT, 'page' );
+    if ( $sample_page ) {
+        // Delete the 'Sample Page'
+        wp_delete_post( $sample_page->ID, true );
+    }
+}
+
+function wpn_get_page_by_title( $page_title, $output = OBJECT, $post_type = 'page' ) {
+	$query = new WP_Query(
+		array(
+			'post_type'              => $post_type,
+			'title'                  => $page_title,
+			'post_status'            => 'all',
+			'posts_per_page'         => 1,
+			'no_found_rows'          => true,
+			'ignore_sticky_posts'    => true,
+			'update_post_term_cache' => false,
+			'update_post_meta_cache' => false,
+			'orderby'                => 'date',
+			'order'                  => 'ASC',
+		)
+	);
+
+	if ( ! empty( $query->post ) ) {
+		$_post = $query->post;
+
+		if ( ARRAY_A === $output ) {
+			return $_post->to_array();
+		} elseif ( ARRAY_N === $output ) {
+			return array_values( $_post->to_array() );
+		}
+
+		return $_post;
 	}
-	// Find and delete the WP default 'Sample Page'
-	$defaultPage = get_page_by_title( 'Sample Page' );
-	if ( $defaultPage->ID == "2" ){
-		wp_delete_post( $defaultPage->ID, $bypass_trash = true );
-	}    
-});
+
+	return null;
+}
 
 add_action('admin_init', function(){});
 
