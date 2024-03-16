@@ -26,7 +26,7 @@ function starter_wp_activation() {
     
     // Check if the 'removed_default_posts_pages' option exists and is false
     if ( ! isset( $swp_options['removed_default_posts_pages'] ) || ! $swp_options['removed_default_posts_pages'] ) {
-        remove_default_posts_pages();
+        swp_remove_default_posts_pages();
         
         // Update the option to indicate execution
         $swp_options['removed_default_posts_pages'] = true;
@@ -56,7 +56,7 @@ defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PA
 require_once( SWP_PATH . '/inc/init.php' );
 
 // Hook the function to the 'init' hook, which is appropriate for plugin initialization
-function remove_default_posts_pages() {
+function swp_remove_default_posts_pages() {
     // Check if 'Hello world!' post exists
     $hello_world_post = wpn_get_page_by_title( 'Hello World!', OBJECT, 'post' );
     if ( $hello_world_post ) {
