@@ -18,11 +18,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 register_activation_hook( __FILE__, 'starter_wp_activation' );
 register_deactivation_hook( __FILE__, 'starter_wp_deactivation' );
 function starter_wp_activation() {
-	add_option( 'starter_wp_activated', time() );
+    $options = starter_wp_get_default_options();
+    add_option( 'starter_wp_options', $options );
+    
+    // Retrieve the options and store them in $swp_options
+    $swp_options = get_option( 'starter_wp_options' );
+    
+    // Check if the 'removed_default_posts_pages' option exists and is false
+    if ( ! isset( $swp_options['removed_default_posts_pages'] ) || ! $swp_options['removed_default_posts_pages'] ) {
+        remove_default_posts_pages();
+        
+        // Update the option to indicate execution
+        $swp_options['removed_default_posts_pages'] = true;
+        update_option( 'starter_wp_options', $swp_options );
+    }	
 }
 
 function starter_wp_deactivation() {
-	delete_option( 'starter_wp_activated' );
+	delete_option( 'starter_wp_options' );
+}
+
+function starter_wp_get_default_options() {
+    $options = array(
+        'activated_on' => time(),
+        'removed_default_posts_pages' => false,
+    );
+
+    // Allow other parts of the plugin or other plugins to modify options
+    return apply_filters( 'starter_wp_default_options', $options );
 }
 
 $constant_name_prefix = 'SWP_';
@@ -33,7 +56,6 @@ defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PA
 require_once( SWP_PATH . '/inc/init.php' );
 
 // Hook the function to the 'init' hook, which is appropriate for plugin initialization
-add_action( 'admin_init', 'remove_default_posts_pages' );
 function remove_default_posts_pages() {
     // Check if 'Hello world!' post exists
     $hello_world_post = wpn_get_page_by_title( 'Hello World!', OBJECT, 'post' );
