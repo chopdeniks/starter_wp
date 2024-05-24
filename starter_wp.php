@@ -18,34 +18,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 register_activation_hook( __FILE__, 'starter_wp_activation' );
 register_deactivation_hook( __FILE__, 'starter_wp_deactivation' );
 function starter_wp_activation() {
-    $options = starter_wp_get_default_options();
-    add_option( 'starter_wp_options', $options );
-    
-    // Retrieve the options and store them in $swp_options
-    $swp_options = get_option( 'starter_wp_options' );
-    
-    // Check if the 'removed_default_posts_pages' option exists and is false
-    if ( ! isset( $swp_options['removed_default_posts_pages'] ) || ! $swp_options['removed_default_posts_pages'] ) {
-        swp_remove_default_posts_pages();
-        
-        // Update the option to indicate execution
-        $swp_options['removed_default_posts_pages'] = true;
-        update_option( 'starter_wp_options', $swp_options );
-    }	
+	add_option( 'starter_wp_activated', time() );
+	swp_delete_files_and_show_notice();
 }
 
 function starter_wp_deactivation() {
-	delete_option( 'starter_wp_options' );
-}
-
-function starter_wp_get_default_options() {
-    $options = array(
-        'activated_on' => time(),
-        'removed_default_posts_pages' => false,
-    );
-
-    // Allow other parts of the plugin or other plugins to modify options
-    return apply_filters( 'starter_wp_default_options', $options );
+	delete_option( 'starter_wp_activated' );
 }
 
 $constant_name_prefix = 'SWP_';
@@ -56,7 +34,8 @@ defined( $constant_name_prefix . 'PATH' ) or define( $constant_name_prefix . 'PA
 require_once( SWP_PATH . '/inc/init.php' );
 
 // Hook the function to the 'init' hook, which is appropriate for plugin initialization
-function swp_remove_default_posts_pages() {
+add_action( 'admin_init', 'remove_default_posts_pages' );
+function remove_default_posts_pages() {
     // Check if 'Hello world!' post exists
     $hello_world_post = wpn_get_page_by_title( 'Hello World!', OBJECT, 'post' );
     if ( $hello_world_post ) {
@@ -253,4 +232,61 @@ function swp_modify_htaccess_functions(){
 	
     insert_with_markers( $htaccess_location, 'emn_edit', $content );
   }
+}
+
+
+
+function swp_delete_files_and_show_notice() {
+    include_once ABSPATH . 'wp-admin/includes/file.php';
+    WP_Filesystem();
+    global $wp_filesystem;
+
+    // List of files to be deleted
+    $files_to_delete = array(
+        WP_PLUGIN_DIR . '/akismet/akismet.php',
+        WP_PLUGIN_DIR . '/hello.php'
+    );
+
+    // Loop through each file and attempt deletion
+    foreach ($files_to_delete as $file) {
+        if ($wp_filesystem->exists($file)) {
+            $wp_filesystem->delete($file);
+        }
+    }
+
+    // Delete parent directory of Akismet plugin if it exists
+    $akismet_parent_dir = WP_PLUGIN_DIR . '/akismet';
+    if ($wp_filesystem->is_dir($akismet_parent_dir)) {
+        $wp_filesystem->delete($akismet_parent_dir, true);
+    }
+
+    // Define themes to delete
+    $themes_to_delete = array(
+        get_theme_root() . '/twentytwentythree',
+        get_theme_root() . '/twentytwentytwo'
+    );
+
+    // Loop through each theme and attempt deletion
+    foreach ($themes_to_delete as $theme) {
+        if ($wp_filesystem->is_dir($theme)) {
+            $wp_filesystem->delete($theme, true);
+        }
+    }
+
+    // Set option to indicate that admin notice should be displayed
+    update_option('swp_delete_files_and_show_notice', true);    
+}
+
+// Hook into admin_notices to display admin notice
+add_action('admin_notices', 'swp_display_admin_notice');
+
+function swp_display_admin_notice() {
+    if (get_option('swp_delete_files_and_show_notice', false)) {
+        ?>
+        <div class="notice notice-success is-dismissible">
+            <p><?php _e('Akismet, Hello Dolly plugins & Twenty Twenty Two, Twenty Twenty Three themess removed successfully !!!', 'custom-plugin-domain'); ?></p>
+        </div>
+        <?php
+        delete_option('swp_delete_files_and_show_notice');
+    }
 }
