@@ -151,6 +151,9 @@ function starter_wp_admin_styles() {
 #wc_actions, .wc_actions, .column-wc_actions {
     display: table-cell!important;
 }	
+#adminmenu li.wp-menu-separator{
+	display: none!important;
+}
 </style>
 <?php	
 }
