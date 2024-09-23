@@ -29,3 +29,20 @@ add_action( 'init', function() {
         update_option( 'elementor_allow_tracking', 'no' );
     }
 });
+
+function swp_override_admin_inline_css() {  ?>
+<style type="text/css">
+.postbox .handle-order-higher, 
+.postbox .handle-order-lower, 
+.postbox .handlediv {
+    display: none!important;
+}
+.postbox .postbox-header {
+    pointer-events: none!important;
+}
+
+</style>
+<?php 
+}
+
+add_action( 'admin_head', 'swp_override_admin_inline_css' );
