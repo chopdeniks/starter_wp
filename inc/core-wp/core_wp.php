@@ -30,6 +30,21 @@ add_action( 'init', function() {
     }
 });
 
+// Remove the metabox for Revolution Slider
+add_action('do_meta_boxes', function() {
+  // Check if the Revolution Slider plugin is installed
+  if (class_exists('RevSlider')) {
+    // Get all public post types dynamically
+    $post_types = get_post_types(array('public' => true), 'names');
+
+    // Loop through all public post types and remove the Revolution Slider metabox
+    foreach ($post_types as $post_type) {
+      remove_meta_box('slider_revolution_metabox', $post_type, 'side');
+    }
+  }
+}, 100);
+
+
 function swp_override_admin_inline_css() {  ?>
 <style type="text/css">
 .postbox .handle-order-higher, 
