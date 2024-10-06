@@ -35,7 +35,7 @@ add_action('do_meta_boxes', function() {
   // Check if the Revolution Slider plugin is installed
   if (class_exists('RevSlider')) {
     // Get all public post types dynamically
-    $post_types = get_post_types(array('public' => true), 'names');
+    $post_types = get_post_types(array('public' => false), 'names');
 
     // Loop through all public post types and remove the Revolution Slider metabox
     foreach ($post_types as $post_type) {
@@ -55,7 +55,14 @@ function swp_override_admin_inline_css() {  ?>
 .postbox .postbox-header {
     pointer-events: none!important;
 }
-
+#screen-meta-links .show-settings:hover {
+    opacity: 1;
+}
+#screen-meta-links .show-settings {
+    opacity: 0;
+    transition: opacity 0.3s linear 0.1s;
+    transition: opacity 0.3s;
+}
 </style>
 <?php 
 }
